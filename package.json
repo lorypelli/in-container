@@ -1,0 +1,22 @@
+{
+    "name": "in-container",
+    "version": "1.0.0",
+    "description": "Check if the current process is running inside a container (Docker, Podman)",
+    "main": "index.js",
+    "types": "index.d.ts",
+    "type": "module",
+    "keywords": [
+        "container",
+        "docker",
+        "podman"
+    ],
+    "scripts": {
+        "format": "prettier --write ."
+    },
+    "author": "LoryPelli",
+    "license": "MIT",
+    "devDependencies": {
+        "prettier": "^3.9.6",
+        "prettier-plugin-organize-imports": "^4.3.0"
+    }
+}
