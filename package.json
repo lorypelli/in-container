@@ -1,6 +1,6 @@
 {
     "name": "in-container",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "Check if the current process is running inside a container (Docker, Podman)",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -27,6 +27,9 @@
     },
     "author": "LoryPelli",
     "license": "MIT",
+    "repository": {
+        "url": "https://github.com/lorypelli/in-container"
+    },
     "devDependencies": {
         "esbuild": "^0.28.1",
         "prettier": "^3.9.6",
