@@ -1,16 +1,15 @@
 {
     "name": "in-container",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "Check if the current process is running inside a container (Docker, Podman)",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "default": "./dist/index.js"
-        }
-    },
     "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "build": "node esbuild.config.js",
+        "format": "prettier --write .",
+        "prepublishOnly": "pnpm build"
+    },
     "files": [
         "./dist/index.js",
         "./dist/index.d.ts"
@@ -20,11 +19,6 @@
         "docker",
         "podman"
     ],
-    "scripts": {
-        "build": "node esbuild.config.js",
-        "format": "prettier --write .",
-        "prepublishOnly": "pnpm build"
-    },
     "author": "LoryPelli",
     "license": "MIT",
     "repository": {
