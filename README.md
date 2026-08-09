@@ -17,7 +17,7 @@ npm install in-container
 ## Usage
 
 ```js
-import { inContainer, inDocker, inPodman } from 'in-container';
+import { inContainer } from 'in-container';
 
 if (await inContainer()) {
     console.log('Running inside a container');
