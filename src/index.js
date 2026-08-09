@@ -1,3 +1,4 @@
+/// <reference path="./index.d.ts" />
 import { access, readFile } from 'node:fs/promises';
 
 const dockerCgroupPattern = /(?:^|[/:-])docker(?:[/:-]|$)/m;
