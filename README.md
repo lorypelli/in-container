@@ -165,7 +165,7 @@ Container detection is a heuristic, not a guarantee. Specifically:
 
 ## Requirements
 
-- **Node.js 18.3+** — the CLI uses `parseArgs` from `node:util`.
+- **Node.js `>=16.17.0 <17.0.0` or `>=18.3.0`** — the CLI uses `parseArgs` from `node:util`.
 - Works from both ESM (`import`) and CommonJS (`require`).
 
 ## Development
