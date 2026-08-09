@@ -8,14 +8,11 @@ let mountInfoPromise = null;
 let dockerResult = null;
 let podmanResult = null;
 
-const exists = async (path) => {
-    try {
-        await access(path);
-        return true;
-    } catch {
-        return false;
-    }
-};
+const exists = (path) =>
+    access(path).then(
+        () => true,
+        () => false,
+    );
 
 const readCgroup = () =>
     (cgroupPromise ??= readFile('/proc/self/cgroup', 'utf8').catch(() => ''));
