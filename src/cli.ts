@@ -1,22 +1,23 @@
 #!/usr/bin/env node
-/// <reference path="./cli.d.ts" />
 import { parseArgs } from 'node:util';
 import { inDocker, inPodman } from './index.js';
 
+/**
+ * The package version, replaced at build time by tsdown's `define`.
+ */
+declare const VERSION: string;
+
 const options = {
-    docker: { type: 'boolean', short: 'd', desc: 'Only check for Docker' },
-    podman: { type: 'boolean', short: 'p', desc: 'Only check for Podman' },
-    json: { type: 'boolean', short: 'j', desc: 'Print the result as JSON' },
     quiet: { type: 'boolean', short: 'q', desc: 'Only set the exit code' },
     help: { type: 'boolean', short: 'h', desc: 'Print this help message' },
     version: { type: 'boolean', short: 'v', desc: 'Print the version number' },
-};
+} as const;
 
 const exitCodes = {
     0: 'running inside a container',
     1: 'not running inside a container',
     2: 'invalid usage',
-};
+} as const;
 
 const indent = ' '.repeat(2);
 
@@ -37,14 +38,6 @@ const usage = [
     ),
 ].join('\n');
 
-const select = (values, docker, podman) => {
-    if (values.docker && values.podman)
-        throw new Error('--docker and --podman cannot be used together');
-    if (values.docker) return docker;
-    if (values.podman) return podman;
-    return docker || podman;
-};
-
 const run = async () => {
     const { values } = parseArgs({ options });
     if (values.help) {
@@ -56,18 +49,14 @@ const run = async () => {
         return;
     }
     const [docker, podman] = await Promise.all([inDocker(), inPodman()]);
-    const container = select(values, docker, podman);
+    const container = docker || podman;
     if (!values.quiet) {
-        console.log(
-            values.json
-                ? JSON.stringify({ container, docker, podman })
-                : String(container),
-        );
+        console.log(JSON.stringify({ container, docker, podman }));
     }
     process.exitCode = container ? 0 : 1;
 };
 
-await run().catch((err) => {
+await run().catch((err: Error) => {
     console.error(`${err.message}\n\n${usage}`);
     process.exitCode = 2;
 });

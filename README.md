@@ -77,10 +77,9 @@ npx in-container
 ```
 Usage: in-container [options]
 
+Check if the current process is running inside a container (Docker, Podman).
+
 Options:
-  -d, --docker   Only check for Docker
-  -p, --podman   Only check for Podman
-  -j, --json     Print the result as JSON
   -q, --quiet    Only set the exit code
   -h, --help     Print this help message
   -v, --version  Print the version number
@@ -93,37 +92,23 @@ Exit code:
 
 ### What it prints
 
-By default the CLI prints one line — `true` or `false` — and exits `0` or `1`
-to match, so it drops straight into a shell condition:
+The CLI always runs both checks and prints all three results as JSON, and
+exits `0` or `1` to match `container`, so it drops straight into a shell
+condition:
 
 ```sh
-if in-container; then
+$ in-container
+{"container":true,"docker":true,"podman":false}
+```
+
+```sh
+if in-container --quiet; then
     echo 'Running inside a container'
 fi
 ```
 
-`-d` and `-p` narrow _which_ result that line reports:
-
-| Flags   | Reported value                                |
-| ------- | --------------------------------------------- |
-| none    | `docker \|\| podman` — true if either matched |
-| `-d`    | the Docker check alone                        |
-| `-p`    | the Podman check alone                        |
-| `-d -p` | `docker \|\| podman`, same as no flags        |
-
-Both checks always run regardless; the flags only choose what is reported.
-
-### `--json`
-
-Reports every check instead of the single selected boolean:
-
-```sh
-$ in-container --json
-{"container":true,"docker":true,"podman":false}
-```
-
-`container` is the same value the plain output would print, so it still honours
-`-d`/`-p`; `docker` and `podman` are always the raw per-runtime results.
+`container` is `docker || podman`; `docker` and `podman` are the raw
+per-runtime results.
 
 ### `--quiet`
 
@@ -187,15 +172,15 @@ Container detection is a heuristic, not a guarantee. Specifically:
 
 ```sh
 pnpm install
-pnpm build     # bundle src/ to dist/ with esbuild, and copy the type declarations
+pnpm build     # bundle src/ to dist/ with tsdown, and emit the type declarations
 pnpm format    # prettier
 ```
 
-`src/index.js` is the library, `src/cli.js` the executable published as the
+`src/index.ts` is the library, `src/cli.ts` the executable published as the
 `in-container` bin. The build replaces the bare `VERSION` identifier in the CLI
-with the version from `package.json` via esbuild's `define`, which is what
-`--version` prints — it is declared for the type-checker in `src/cli.d.ts` and
-does not exist at runtime before bundling.
+with the version from `package.json` via tsdown's `define`, which is what
+`--version` prints — it is declared ambient in `src/cli.ts` for the
+type-checker and does not exist at runtime before bundling.
 
 ## License
 
