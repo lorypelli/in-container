@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import * as nodeUtil from 'node:util';
+import utils from 'node:util';
 import { inDocker, inPodman } from './async.js';
 
 /**
@@ -18,6 +18,8 @@ const exitCodes = {
     1: 'not running inside a container',
     2: 'invalid usage',
 } as const;
+
+class UnsupportedVersionError extends Error {}
 
 const indent = ' '.repeat(2);
 
@@ -38,13 +40,17 @@ const usage = [
     ),
 ].join('\n');
 
+const unsupportedVersionMessage = [
+    `Unsupported Node.js version: ${process.version}.`,
+    'The in-container CLI requires Node.js >=16.17.0 <17.0.0 or >=18.3.0 to parse command-line options.',
+    'To use in-container on this version, import it as a library instead.',
+].join('\n');
+
 const run = async () => {
-    if (typeof nodeUtil.parseArgs !== 'function') {
-        throw new Error(
-            `in-container requires Node.js >=16.17.0 <17.0.0 or >=18.3.0 to parse CLI options (running ${process.version}); the package itself supports older versions when imported as a library.`,
-        );
+    if (typeof utils.parseArgs != 'function') {
+        throw new UnsupportedVersionError(unsupportedVersionMessage);
     }
-    const { values } = nodeUtil.parseArgs({ options });
+    const { values } = utils.parseArgs({ options });
     if (values.help) {
         console.log(usage);
         return;
@@ -62,6 +68,11 @@ const run = async () => {
 };
 
 await run().catch((err: Error) => {
-    console.error(`${err.message}\n\n${usage}`);
+    const isUnsupportedVersion = err instanceof UnsupportedVersionError;
+    console.error(
+        isUnsupportedVersion
+            ? `Error: ${err.message}`
+            : `${err.message}\n\n${usage}`,
+    );
     process.exitCode = 2;
 });
