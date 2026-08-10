@@ -1,10 +1,10 @@
 {
     "name": "in-container",
-    "version": "1.4.2",
+    "version": "2.0.0",
     "description": "Check if the current process is running inside a container (Docker, Podman)",
     "type": "module",
     "engines": {
-        "node": ">=16.17.0 <17.0.0 || >=18.3.0"
+        "node": ">=14.18.0"
     },
     "exports": {
         ".": {
@@ -15,6 +15,26 @@
             "require": {
                 "types": "./dist/index.d.cts",
                 "default": "./dist/index.cjs"
+            }
+        },
+        "./sync": {
+            "import": {
+                "types": "./dist/sync.d.mts",
+                "default": "./dist/sync.mjs"
+            },
+            "require": {
+                "types": "./dist/sync.d.cts",
+                "default": "./dist/sync.cjs"
+            }
+        },
+        "./async": {
+            "import": {
+                "types": "./dist/async.d.mts",
+                "default": "./dist/async.mjs"
+            },
+            "require": {
+                "types": "./dist/async.d.cts",
+                "default": "./dist/async.cjs"
             }
         }
     },
@@ -27,11 +47,7 @@
         "prepublishOnly": "pnpm build"
     },
     "files": [
-        "./dist/index.mjs",
-        "./dist/index.cjs",
-        "./dist/index.d.mts",
-        "./dist/index.d.cts",
-        "./dist/cli.mjs"
+        "./dist"
     ],
     "keywords": [
         "container",

@@ -6,12 +6,13 @@ const { version } = require('./package.json');
 
 const shared = {
     minify: true,
+    hash: false,
 };
 
 export default defineConfig([
     {
         ...shared,
-        entry: ['src/index.ts'],
+        entry: ['src/index.ts', 'src/sync.ts', 'src/async.ts'],
     },
     {
         ...shared,
@@ -21,7 +22,7 @@ export default defineConfig([
     },
     {
         ...shared,
-        entry: ['src/index.ts'],
+        entry: ['src/index.ts', 'src/sync.ts', 'src/async.ts'],
         format: ['cjs'],
     },
 ]);

@@ -4,10 +4,10 @@ Check if the current process is running inside a container (Docker, Podman).
 
 - Zero dependencies
 - Usable as a library or as a CLI
-- Async, non-blocking detection (no `execSync`/`spawnSync`)
+- Both async, non-blocking (no `execSync`/`spawnSync`) and sync flavors
 - Results cached per-process — safe to call repeatedly
 - Ships with TypeScript types out of the box
-- Resolves `false` (never throws) on platforms without container-specific paths, e.g. Windows or macOS hosts
+- Resolves/returns `false` (never throws) on platforms without container-specific paths, e.g. Windows or macOS hosts
 
 ## Install
 
@@ -17,8 +17,13 @@ npm install in-container
 
 ## Usage
 
+The package ships two flavors — async (non-blocking, uses `node:fs/promises`)
+and sync (blocking, uses `node:fs`). Import from a specific subpath to get the
+unprefixed names, or from the package root to get both, disambiguated with a
+`Sync`/`Async` suffix.
+
 ```js
-import { inContainer } from 'in-container';
+import { inContainer } from 'in-container/async';
 
 if (await inContainer()) {
     console.log('Running inside a container');
@@ -26,47 +31,54 @@ if (await inContainer()) {
 ```
 
 ```js
-import { inDocker } from 'in-container';
+import { inContainer } from 'in-container/sync';
 
-if (await inDocker()) {
-    console.log('Running inside a Docker container');
+if (inContainer()) {
+    console.log('Running inside a container');
 }
 ```
 
 ```js
-import { inPodman } from 'in-container';
+import { inContainerAsync, inContainerSync } from 'in-container';
 
-if (await inPodman()) {
-    console.log('Running inside a Podman container');
-}
+await inContainerAsync();
+inContainerSync();
 ```
 
-Every function returns a promise, so `await` it (or `.then()` it) — a bare
-`if (inContainer())` is always truthy, because a promise is an object.
+The same applies to `inDocker`/`inDockerAsync`/`inDockerSync` and
+`inPodman`/`inPodmanAsync`/`inPodmanSync`.
+
+Async functions return a promise, so `await` them (or `.then()` them) — a bare
+`if (inContainerAsync())` is always truthy, because a promise is an object.
 
 ## API
 
+Each function is available in two forms: an async version (`Promise<boolean>`,
+non-blocking) from `in-container/async`, and a sync version (`boolean`,
+blocking) from `in-container/sync`. The package root (`in-container`)
+re-exports both, suffixed `Async`/`Sync`.
+
 ### `inDocker()`
 
-Returns `Promise<boolean>` — whether the current process appears to be running inside a Docker container.
+Whether the current process appears to be running inside a Docker container.
 
-Detected via `/.dockerenv`, a `docker` cgroup segment in `/proc/self/cgroup`, or a `/docker/containers/` mount in `/proc/self/mountinfo`. Resolves `false` on platforms without those paths (e.g. Windows, macOS hosts).
+Detected via `/.dockerenv`, a `docker` cgroup segment in `/proc/self/cgroup`, or a `/docker/containers/` mount in `/proc/self/mountinfo`. Resolves/returns `false` on platforms without those paths (e.g. Windows, macOS hosts).
 
 The result is cached after the first call, since it cannot change for the lifetime of the process.
 
 ### `inPodman()`
 
-Returns `Promise<boolean>` — whether the current process appears to be running inside a Podman container.
+Whether the current process appears to be running inside a Podman container.
 
-Detected via `/run/.containerenv` or a `libpod`/`podman` cgroup segment in `/proc/self/cgroup`. Resolves `false` on platforms without those paths (e.g. Windows, macOS hosts).
+Detected via `/run/.containerenv` or a `libpod`/`podman` cgroup segment in `/proc/self/cgroup`. Resolves/returns `false` on platforms without those paths (e.g. Windows, macOS hosts).
 
 The result is cached after the first call, since it cannot change for the lifetime of the process.
 
 ### `inContainer()`
 
-Returns `Promise<boolean>` — whether the current process appears to be running inside a Docker or Podman container. Equivalent to `(await inDocker()) || (await inPodman())`.
+Whether the current process appears to be running inside a Docker or Podman container. Equivalent to `inDocker() || inPodman()` (or the awaited equivalent for the async version).
 
-Both checks are run concurrently, so this costs no more than calling either one alone.
+The async version runs both checks concurrently, so it costs no more than calling either one alone.
 
 ## CLI
 
@@ -176,11 +188,13 @@ pnpm build     # bundle src/ to dist/ with tsdown, and emit the type declaration
 pnpm format    # prettier
 ```
 
-`src/index.ts` is the library, `src/cli.ts` the executable published as the
-`in-container` bin. The build replaces the bare `VERSION` identifier in the CLI
-with the version from `package.json` via tsdown's `define`, which is what
-`--version` prints — it is declared ambient in `src/cli.ts` for the
-type-checker and does not exist at runtime before bundling.
+`src/async.ts` and `src/sync.ts` hold the two detection implementations,
+`src/index.ts` re-exports both under `Async`/`Sync`-suffixed names, and
+`src/cli.ts` is the executable published as the `in-container` bin. The build
+replaces the bare `VERSION` identifier in the CLI with the version from
+`package.json` via tsdown's `define`, which is what `--version` prints — it is
+declared ambient in `src/cli.ts` for the type-checker and does not exist at
+runtime before bundling.
 
 ## License
 

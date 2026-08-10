@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { parseArgs } from 'node:util';
-import { inDocker, inPodman } from './index.js';
+import * as nodeUtil from 'node:util';
+import { inDocker, inPodman } from './async.js';
 
 /**
  * The package version, replaced at build time by tsdown's `define`.
@@ -39,7 +39,12 @@ const usage = [
 ].join('\n');
 
 const run = async () => {
-    const { values } = parseArgs({ options });
+    if (typeof nodeUtil.parseArgs !== 'function') {
+        throw new Error(
+            `in-container requires Node.js >=16.17.0 <17.0.0 or >=18.3.0 to parse CLI options (running ${process.version}); the package itself supports older versions when imported as a library.`,
+        );
+    }
+    const { values } = nodeUtil.parseArgs({ options });
     if (values.help) {
         console.log(usage);
         return;
