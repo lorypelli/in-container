@@ -1,8 +1,5 @@
 import { defineConfig } from 'tsdown';
-import { createRequire } from 'node:module';
-
-const require = createRequire(import.meta.url);
-const { version } = require('./package.json');
+import json from './package.json' with { type: 'json' };
 
 const shared = {
     minify: true,
@@ -18,7 +15,7 @@ export default defineConfig([
         ...shared,
         entry: ['src/cli.ts'],
         dts: false,
-        define: { VERSION: JSON.stringify(version) },
+        define: { VERSION: JSON.stringify(json.version) },
     },
     {
         ...shared,
