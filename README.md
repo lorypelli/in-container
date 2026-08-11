@@ -48,6 +48,38 @@ import { inContainerAsync, inContainerSync } from 'in-container';
 The same applies to `inDocker`/`inDockerAsync`/`inDockerSync` and
 `inPodman`/`inPodmanAsync`/`inPodmanSync`.
 
+The root entry point also groups the functions under `async`/`sync` namespace
+objects:
+
+```js
+import { async, sync } from 'in-container';
+
+await async.inDocker();
+sync.inDocker();
+```
+
+And has a default export grouping the `async`/`sync` namespaces:
+
+```js
+import container from 'in-container';
+
+await container.async.inDocker();
+container.sync.inDocker();
+```
+
+In CommonJS, `require('in-container')` exposes both the namespaces and the
+flat `Async`/`Sync`-suffixed functions directly on the returned object, no
+`.default` needed:
+
+```js
+const container = require('in-container');
+
+await container.async.inDocker();
+container.sync.inDocker();
+await container.inDockerAsync();
+container.inDockerSync();
+```
+
 ## API
 
 ### `inDocker()`
@@ -75,6 +107,8 @@ npx in-container
 
 ```
 Usage: in-container [options]
+
+Check if the current process is running inside a container (Docker, Podman).
 
 Options:
   -q, --quiet    Only set the exit code

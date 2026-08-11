@@ -8,6 +8,6 @@
         "strict": true,
         "types": ["node"]
     },
-    "include": ["./**/*.ts"],
+    "include": ["./**/*.ts", "./**/*.cts", "./**/*.mts"],
     "exclude": ["node_modules", "dist"]
 }

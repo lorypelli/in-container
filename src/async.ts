@@ -34,7 +34,7 @@ const readMountInfo = () =>
  * The result is cached after the first call, since it cannot change for the
  * lifetime of the process.
  */
-export const inDocker = async (): Promise<boolean> => {
+export const inDocker = async () => {
     if (dockerResult == null) {
         const [hasEnv, cgroup, mountInfo] = await Promise.all([
             exists('/.dockerenv'),
@@ -59,7 +59,7 @@ export const inDocker = async (): Promise<boolean> => {
  * The result is cached after the first call, since it cannot change for the
  * lifetime of the process.
  */
-export const inPodman = async (): Promise<boolean> => {
+export const inPodman = async () => {
     if (podmanResult == null) {
         const [hasEnv, cgroup] = await Promise.all([
             exists('/run/.containerenv'),
@@ -74,7 +74,7 @@ export const inPodman = async (): Promise<boolean> => {
  * Whether the current process appears to be running inside a Docker or Podman
  * container — equivalent to `(await inDocker()) || (await inPodman())`.
  */
-export const inContainer = async (): Promise<boolean> => {
+export const inContainer = async () => {
     const [docker, podman] = await Promise.all([inDocker(), inPodman()]);
     return docker || podman;
 };
