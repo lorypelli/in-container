@@ -1,8 +1,6 @@
 import { async, sync } from './shared.js';
 
 export {
-    async,
-    sync,
     inContainerAsync,
     inDockerAsync,
     inPodmanAsync,
