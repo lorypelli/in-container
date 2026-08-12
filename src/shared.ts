@@ -1,11 +1,11 @@
 import * as asyncFns from './async.js';
 import * as syncFns from './sync.js';
 
-function guard<Result>(
+const guard = <Result>(
     fn: () => Result,
     requireDestructured: boolean,
-): () => Result {
-    return function (this: object | undefined): Result {
+): (() => Result) =>
+    function (this: object | undefined): Result {
         'use strict';
         const isDestructured = this == undefined;
         if (isDestructured != requireDestructured) {
@@ -16,7 +16,6 @@ function guard<Result>(
         }
         return fn();
     };
-}
 
 export const inDockerAsync = guard(asyncFns.inDocker, true);
 export const inPodmanAsync = guard(asyncFns.inPodman, true);
