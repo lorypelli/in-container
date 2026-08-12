@@ -21,26 +21,44 @@ import { inContainer } from 'in-container/async'; // or 'in-container/sync'
 if (await inContainer()) console.log('Running inside a container');
 ```
 
-The root re-exports `inDocker`/`inPodman`/`inContainer` under `async`/`sync`
-namespaces, a default export grouping them (`container` by convention), and
-flat `Async`/`Sync`-suffixed functions that must be destructured:
+The root re-exports `inDocker`/`inPodman`/`inContainer` under `async()`/
+`sync()` namespace functions, a default export grouping them (`container` by
+convention), and flat `Async`/`Sync`-suffixed functions — the two forms
+require opposite call styles:
+
+- Namespace functions (`container.async()`, etc.) must be called attached to
+  `container` — they return an object whose own methods must, in turn, stay
+  attached to that returned object.
+- Flat functions (`inContainerAsync`, etc.) must be destructured — call them
+  standalone, not dotted off `container`.
 
 ```js
 import container, { inContainerAsync } from 'in-container';
 
-await container.async.inDocker();
-await inContainerAsync();
+await container.async().inDocker(); // ok: async() called attached to container
+await inContainerAsync(); // ok: destructured out
+
+const { async } = container;
+async(); // throws: async pulled off container, called detached
+
+const { inDocker } = container.async();
+inDocker(); // throws: pulled out of the returned namespace
+
+container.inContainerAsync(); // throws: called attached, not destructured
 ```
 
+`async`/`sync` also aren't importable as named exports — only reachable via
+the default export.
+
 CommonJS has no default/named split — `require()` returns that same object,
-so destructure named pieces straight off it:
+so the same rules apply straight off it:
 
 ```js
 const container = require('in-container');
 const { inContainerSync } = container;
 
-container.sync.inDocker();
-inContainerSync();
+container.sync().inDocker(); // ok
+inContainerSync(); // ok
 ```
 
 ## CLI

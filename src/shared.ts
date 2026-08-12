@@ -1,31 +1,40 @@
 import * as asyncFns from './async.js';
 import * as syncFns from './sync.js';
 
-export const async = {
-    inContainer: asyncFns.inContainer,
-    inDocker: asyncFns.inDocker,
-    inPodman: asyncFns.inPodman,
-};
-export const sync = {
-    inContainer: syncFns.inContainer,
-    inDocker: syncFns.inDocker,
-    inPodman: syncFns.inPodman,
-};
-
-function wrap<Result>(fn: () => Result): () => Result {
+function guard<Result>(
+    fn: () => Result,
+    requireDestructured: boolean,
+): () => Result {
     return function (this: object | undefined): Result {
         'use strict';
-        if (this != undefined) {
-            console.error('Functions can only be used by destructuring.');
+        const isDestructured = this == undefined;
+        if (isDestructured != requireDestructured) {
+            console.error(
+                `Functions can only be used ${requireDestructured ? 'by' : 'without'} destructuring.`,
+            );
             process.exit(1);
         }
         return fn();
     };
 }
 
-export const inDockerAsync = wrap(async.inDocker);
-export const inPodmanAsync = wrap(async.inPodman);
-export const inContainerAsync = wrap(async.inContainer);
-export const inDockerSync = wrap(sync.inDocker);
-export const inPodmanSync = wrap(sync.inPodman);
-export const inContainerSync = wrap(sync.inContainer);
+export const inDockerAsync = guard(asyncFns.inDocker, true);
+export const inPodmanAsync = guard(asyncFns.inPodman, true);
+export const inContainerAsync = guard(asyncFns.inContainer, true);
+export const inDockerSync = guard(syncFns.inDocker, true);
+export const inPodmanSync = guard(syncFns.inPodman, true);
+export const inContainerSync = guard(syncFns.inContainer, true);
+
+const asyncNamespace = {
+    inContainer: guard(asyncFns.inContainer, false),
+    inDocker: guard(asyncFns.inDocker, false),
+    inPodman: guard(asyncFns.inPodman, false),
+};
+const syncNamespace = {
+    inContainer: guard(syncFns.inContainer, false),
+    inDocker: guard(syncFns.inDocker, false),
+    inPodman: guard(syncFns.inPodman, false),
+};
+
+export const async = guard(() => asyncNamespace, false);
+export const sync = guard(() => syncNamespace, false);
