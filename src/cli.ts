@@ -19,8 +19,6 @@ const exitCodes = {
     2: 'invalid usage',
 } as const;
 
-class UnsupportedVersionError extends Error {}
-
 const indent = ' '.repeat(2);
 
 const usage = [
@@ -48,7 +46,8 @@ const unsupportedVersionMessage = [
 
 const run = async () => {
     if (typeof utils.parseArgs != 'function') {
-        throw new UnsupportedVersionError(unsupportedVersionMessage);
+        console.error(`Error: ${unsupportedVersionMessage}`);
+        process.exit(2);
     }
     const { values } = utils.parseArgs({ options });
     if (values.help) {
@@ -68,11 +67,6 @@ const run = async () => {
 };
 
 await run().catch((err: Error) => {
-    const isUnsupportedVersion = err instanceof UnsupportedVersionError;
-    console.error(
-        isUnsupportedVersion
-            ? `Error: ${err.message}`
-            : `${err.message}\n\n${usage}`,
-    );
+    console.error(`${err.message}\n\n${usage}`);
     process.exitCode = 2;
 });

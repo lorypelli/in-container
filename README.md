@@ -1,21 +1,13 @@
 # in-container
 
-Check if the current process is running inside a container (Docker, Podman).
+Detect whether the current process is running inside a container (Docker or
+Podman) — `inDocker()`/`inPodman()` check filesystem/cgroup signals,
+`inContainer()` is their OR. Zero dependencies, async/sync flavors, resolves
+`false` (never throws; heuristic, forgeable) with no signal, e.g.
+Windows/macOS hosts or other runtimes.
 
-- Zero dependencies
-- Usable as a library or as a CLI
-- Both async and sync flavors
-- Resolves/returns `false` (never throws) on platforms without container-specific paths, e.g. Windows or macOS hosts
-
-## Requirements
-
-- **Node.js `>=14.18.0`** to use as a library.
-- The CLI additionally requires `>=16.17.0 <17.0.0` or `>=18.3.0`, since it
-  relies on `parseArgs` from `node:util`. On older versions it exits `2` with
-  an explanatory error instead of failing silently.
-- Works from both ESM (`import`) and CommonJS (`require`).
-
-## Install
+Node.js `>=14.18.0`; CLI needs `>=16.17.0 <17.0.0` or `>=18.3.0` for
+`parseArgs`. ESM and CommonJS.
 
 ```sh
 npm install in-container
@@ -24,137 +16,47 @@ npm install in-container
 ## Usage
 
 ```js
-import { inContainer } from 'in-container/async';
+import { inContainer } from 'in-container/async'; // or 'in-container/sync'
 
-if (await inContainer()) {
-    console.log('Running inside a container');
-}
+if (await inContainer()) console.log('Running inside a container');
 ```
 
-```js
-import { inContainer } from 'in-container/sync';
-
-if (inContainer()) {
-    console.log('Running inside a container');
-}
-```
-
-The package root (`in-container`) re-exports both flavors, suffixed `Async`/`Sync`:
+The root re-exports `inDocker`/`inPodman`/`inContainer` under `async`/`sync`
+namespaces, a default export grouping them (`container` by convention), and
+flat `Async`/`Sync`-suffixed functions that must be destructured:
 
 ```js
-import { inContainerAsync, inContainerSync } from 'in-container';
-```
-
-The same applies to `inDocker`/`inDockerAsync`/`inDockerSync` and
-`inPodman`/`inPodmanAsync`/`inPodmanSync`.
-
-The root entry point also groups the functions under `async`/`sync` namespace
-objects:
-
-```js
-import { async, sync } from 'in-container';
-
-await async.inDocker();
-sync.inDocker();
-```
-
-And has a default export grouping the `async`/`sync` namespaces:
-
-```js
-import container from 'in-container';
+import container, { inContainerAsync } from 'in-container';
 
 await container.async.inDocker();
-container.sync.inDocker();
+await inContainerAsync();
 ```
 
-In CommonJS, `require('in-container')` exposes both the namespaces and the
-flat `Async`/`Sync`-suffixed functions directly on the returned object, no
-`.default` needed:
+CommonJS has no default/named split — `require()` returns that same object,
+so destructure named pieces straight off it:
 
 ```js
 const container = require('in-container');
+const { inContainerSync } = container;
 
-await container.async.inDocker();
 container.sync.inDocker();
-await container.inDockerAsync();
-container.inDockerSync();
+inContainerSync();
 ```
-
-## API
-
-### `inDocker()`
-
-Whether the current process appears to be running inside a Docker container.
-Detected via `/.dockerenv`, a `docker` cgroup segment in `/proc/self/cgroup`,
-or a `/docker/containers/` mount in `/proc/self/mountinfo`.
-
-### `inPodman()`
-
-Whether the current process appears to be running inside a Podman container.
-Detected via `/run/.containerenv` or a `libpod`/`podman` cgroup segment in
-`/proc/self/cgroup`.
-
-### `inContainer()`
-
-Equivalent to `inDocker() || inPodman()` (or the awaited equivalent for the
-async version).
 
 ## CLI
 
 ```sh
-npx in-container
+npx in-container [-q|--quiet] [-h|--help] [-v|--version]
 ```
 
-```
-Usage: in-container [options]
-
-Check if the current process is running inside a container (Docker, Podman).
-
-Options:
-  -q, --quiet    Only set the exit code
-  -h, --help     Print this help message
-  -v, --version  Print the version number
-
-Exit code:
-  0  running inside a container
-  1  not running inside a container
-  2  invalid usage
-```
-
-By default it prints all three results as JSON:
-
-```sh
-$ in-container
-{"container":true,"docker":true,"podman":false}
-```
-
-Use `--quiet` in scripts that only care about the exit code:
-
-```sh
-if in-container --quiet; then
-    echo 'Running inside a container'
-fi
-```
-
-## Limitations
-
-Container detection is a heuristic, not a guarantee:
-
-- Only Docker and Podman are detected — other runtimes (containerd, CRI-O,
-  LXC, plain namespaces) usually leave none of these signals, so many
-  Kubernetes pods will report `false`.
-- With Docker Desktop on macOS/Windows, your process runs on the host, not in
-  the Linux VM, so the answer is correctly `false`.
-- The signals are forgeable — do not use this as a security boundary.
+Prints `{"container":true,"docker":true,"podman":false}`, exits `0`/`1`/`2`
+for detected/not detected/invalid usage; `--quiet` skips the JSON.
 
 ## Development
 
 ```sh
-pnpm install
-pnpm build     # bundle src/ to dist/ with tsdown, and emit the type declarations
-pnpm format    # prettier
+pnpm install && pnpm build   # dist/ + type declarations
+pnpm format                  # prettier
 ```
 
-## License
-
-MIT
+MIT licensed.

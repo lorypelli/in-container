@@ -1,12 +1,23 @@
-import { async, sync } from './shared.js';
-
-export = {
+import {
     async,
     sync,
-    inContainerAsync: async.inContainer,
-    inDockerAsync: async.inDocker,
-    inPodmanAsync: async.inPodman,
-    inContainerSync: sync.inContainer,
-    inDockerSync: sync.inDocker,
-    inPodmanSync: sync.inPodman,
+    inContainerAsync,
+    inDockerAsync,
+    inPodmanAsync,
+    inContainerSync,
+    inDockerSync,
+    inPodmanSync,
+} from './shared.js';
+
+const container = {
+    async,
+    sync,
+    inContainerAsync,
+    inDockerAsync,
+    inPodmanAsync,
+    inContainerSync,
+    inDockerSync,
+    inPodmanSync,
 };
+
+export = container;
