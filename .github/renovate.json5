@@ -1,0 +1,23 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:best-practices',
+    ':semanticCommitsDisabled',
+    'schedule:weekly',
+  ],
+  timezone: 'Europe/Rome',
+  minimumReleaseAge: '3 days',
+  lockFileMaintenance: { enabled: true },
+  packageRules: [
+    {
+      description: 'Group Biome packages',
+      matchPackageNames: ['@biomejs/**'],
+      groupName: 'biome',
+    },
+    {
+      description: 'Group GitHub Actions updates',
+      matchManagers: ['github-actions'],
+      groupName: 'github actions',
+    },
+  ],
+}

@@ -1,0 +1,39 @@
+name: Bug report
+description: Wrong detection result or unexpected behavior
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Steps, code, or CLI command to reproduce.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: in-container version
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version
+      placeholder: v24.0.0
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Container runtime and host OS
+      placeholder: Docker 27 on Ubuntu 24.04, rootless Podman on Fedora, ...
+    validations:
+      required: true
