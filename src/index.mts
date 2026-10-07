@@ -2,10 +2,10 @@ import { async, sync } from './shared.js';
 
 export {
     inContainerAsync,
-    inDockerAsync,
-    inPodmanAsync,
     inContainerSync,
+    inDockerAsync,
     inDockerSync,
+    inPodmanAsync,
     inPodmanSync,
 } from './shared.js';
 

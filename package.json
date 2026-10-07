@@ -1,11 +1,19 @@
 {
     "name": "in-container",
-    "version": "2.1.4",
+    "version": "2.1.5",
     "description": "Check if the current process is running inside a container (Docker, Podman)",
-    "type": "module",
-    "engines": {
-        "node": ">=14.18.0"
+    "keywords": [
+        "container",
+        "docker",
+        "podman",
+        "cli"
+    ],
+    "repository": {
+        "url": "https://github.com/lorypelli/in-container"
     },
+    "license": "MIT",
+    "author": "LoryPelli",
+    "type": "module",
     "exports": {
         ".": {
             "import": {
@@ -41,30 +49,21 @@
     "bin": {
         "in-container": "./dist/cli.mjs"
     },
-    "scripts": {
-        "build": "tsdown",
-        "format": "prettier --write .",
-        "prepublishOnly": "pnpm build"
-    },
     "files": [
         "./dist"
     ],
-    "keywords": [
-        "container",
-        "docker",
-        "podman",
-        "cli"
-    ],
-    "author": "LoryPelli",
-    "license": "MIT",
-    "repository": {
-        "url": "https://github.com/lorypelli/in-container"
+    "scripts": {
+        "build": "tsdown",
+        "format": "biome check --write",
+        "prepublishOnly": "pnpm build"
     },
     "devDependencies": {
-        "@types/node": "^26.2.0",
-        "prettier": "^3.9.6",
-        "prettier-plugin-organize-imports": "^4.3.0",
-        "tsdown": "^0.22.14",
+        "@biomejs/biome": "^2.5.15",
+        "@types/node": "^26.6.4",
+        "tsdown": "^0.23.0",
         "typescript": "^7.0.2"
+    },
+    "engines": {
+        "node": ">=14.18.0"
     }
 }

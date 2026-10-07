@@ -2,9 +2,9 @@ import { defineConfig } from 'tsdown';
 import json from './package.json' with { type: 'json' };
 
 const shared = {
-    minify: true,
     hash: false,
     inputOptions: { experimental: { attachDebugInfo: 'none' } } as const,
+    minify: true,
 };
 
 export default defineConfig([
@@ -14,9 +14,9 @@ export default defineConfig([
     },
     {
         ...shared,
-        entry: ['src/cli.ts'],
-        dts: false,
         define: { VERSION: JSON.stringify(json.version) },
+        dts: false,
+        entry: ['src/cli.ts'],
     },
     {
         ...shared,

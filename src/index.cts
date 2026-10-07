@@ -1,12 +1,12 @@
 import {
     async,
-    sync,
     inContainerAsync,
-    inDockerAsync,
-    inPodmanAsync,
     inContainerSync,
+    inDockerAsync,
     inDockerSync,
+    inPodmanAsync,
     inPodmanSync,
+    sync,
 } from './shared.js';
 
 const container = {
